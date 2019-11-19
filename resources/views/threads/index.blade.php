@@ -1,0 +1,34 @@
+@extends('layouts.app')
+
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                @include('threads._list')
+                <div class="align-content-center">
+                        {{$threads->render()}}
+                </div>
+            </div>
+            <div class="col-md-4">
+                @if(count($trending))
+                <div class="card">
+                    <div class="card-header">
+                        Trending Threads
+                    </div>
+                    <div class="card-body">
+                        @foreach($trending as $thread)
+                            <li class="list-group-item">
+                                <a href="{{url($thread->path)}}">
+                                {{\Illuminate\Support\Str::words($thread->title, 5)}}
+                                </a>
+                            </li>
+                            @endforeach
+                    </div>
+                </div>
+                    @endif
+
+
+            </div>
+        </div>
+    </div>
+@endsection

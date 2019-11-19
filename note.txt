@@ -1,0 +1,19 @@
+
+
+1. User
+2. Thread
+3. User
+
+A. A Thread is created by a user
+B Reply belongs to a thread
+
+
+Makea thread with users and replies
+
+$channel = factory('App\Channel', 50)->create()
+
+ $threads =  factory('App\Thread', 50)->create(['channel_id' => factory('App\Channel')->create()->id ])
+ $threads->each(function($t) {
+ factory('App\Reply', 10)->create(['thread_id'=>$t->id]);
+ })
+
