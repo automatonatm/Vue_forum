@@ -104,9 +104,9 @@
         },
 
         computed: {
-            signedIn() {
+           /* signedIn() {
                 return window.App.signedIn;
-            },
+            },*/
         }
     }
 </script>

@@ -3,11 +3,15 @@
 @section('header')
 
     <link href="{{ asset('css/vendor/jquery.atwho.css') }}" rel="stylesheet">
+
+    <script>
+        window.thread  = <?= json_encode($thread);   ?>
+    </script>
     @endsection
 
 @section('content')
 
-    <thread-view :initial-replies-count="{{$thread->replies_count}}" inline-template>
+    <thread-view :thread="{{$thread}}" :initial-replies-count="{{$thread->replies_count}}" :data-locked="{{json_encode($thread->locked)}}" inline-template>
 
         <div class="container">
             <div class="row">
@@ -72,7 +76,13 @@
                                 by <a href="{{route('profile',$thread->user->name )}}">{{$thread->user->name}}</a> and current has @{{repliesCount}} {{str_plural('comment', $thread->replies_count)}}
                             </p>
 
-                          <subscribe-button :active="{{json_encode($thread->isSubscribedTo)}}"></subscribe-button>
+                            <div>
+                          <subscribe-button v-if="signedIn" :active="{{json_encode($thread->isSubscribedTo)}}"></subscribe-button>
+
+                            <button v-if="authorize('isAdmin')"  class="btn btn-primary float-right mt-0" @click="lock">@{{locked ? 'UNLOCK' : 'LOCK'}}</button>
+
+                            </div>
+
 
                         </div>
 

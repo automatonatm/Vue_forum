@@ -2,15 +2,17 @@
 
    <!-- <reply :attributes="{{$reply}}" inline-template route="{{route('reply.patch', $reply->id)}}" v-cloak>
 -->
-        <div class="card mt-2 mb-2" :id="'reply-'+id">
-            <div class="card-header">
+        <div class="card mt-2 mb-2  " :id="'reply-'+id">
+            <div :class=" isBest ? 'card-header bg-success': 'card-header' ">
                 <div class="">
-
-                    <a :href="'/profiles/'+data.user.name">{{data.user.name}}</a>
-
+                    <a :href="'/profiles/'+reply.user.name">{{reply.user.name}}</a>
                     at {{ago }}...
                     <!--{{$reply->created_at->diffForHumans()}}-->
+                    <div class="float-right" v-if="authorize('owns', reply.thread)">
+                        <button  v-show="! isBest"  class="btn btn-sm btn-primary" @click="markBestReply">BEST REPLY?</button>
+                    </div>
 
+                    <span class="text-primary text-bold float-right" v-show="isBest"><i class="fa fa-happy"></i>BEST REPLY</span>
 
                 </div>
 
@@ -22,8 +24,9 @@
                     <form @submit.prevent="update">
 
                         <div class="form-group animated fadeIn" data-delay="5">
-                            <textarea class="form-control" v-model="data.body" required></textarea>
+                            <textarea class="form-control" v-model="body" required></textarea>
                         </div>
+
                         <button  class="btn btn-sm btn-success">Update</button>
                         <button @click="editing = false" type="button" class="btn btn-sm btn-primary">Cancel</button>
 
@@ -32,20 +35,20 @@
                 </div>
 
                 <div v-else>
-                    <div class="" v-html="data.body"></div>
+                    <div class="" v-html="body"></div>
                 </div>
 
             </div>
 
             <div class="card-footer" >
 
-
-                <div v-if="canUpdate">
+                <div v-if="authorize('owns', reply) ">
                 <button @click="editing = true" class="btn btn-sm btn-primary ml-3">Edit</button>
                 <button @click="destroy" class="btn btn-sm btn-danger">X</button>
+
                </div>
 
-                <favorite v-if="signedIn" :reply="data"></favorite>
+                <favorite v-if="signedIn" :reply="reply"></favorite>
             </div>
         </div>
 
@@ -62,32 +65,41 @@
             favorite
         },
 
-        props: ['data', 'route'],
+        props: ['reply', 'route'],
         data() {
             return {
                 editing: false,
-                reply: this.data,
-                id: this.data.id
+                id: this.reply.id,
+                thread: window.thread,
+                body: this.reply.body,
+                //isBest: this.data.isBest
             }
         },
 
+
+
         computed: {
+            /*
             signedIn() {
                 return window.App.signedIn;
-            },
-            canUpdate() {
+            },*/
+           /* canUpdate() {
               return this.authorize(user => this.data.user.id === user.id)
 
-            },
+            },*/
             ago() {
-                return moment(this.data.created_at).fromNow()
+                return moment(this.reply.created_at).fromNow()
+            },
+
+            isBest(){
+               return  this.thread.best_reply_id === this.id;
             }
         },
         methods: {
             update() {
                 axios
                     .patch('/replies/'+this.reply.id+'', {
-                        body: this.reply.body
+                        body: this.body
                     })
                     .then((resp) => {
                         this.editing = false
@@ -105,7 +117,6 @@
                     .then((resp) => {
                         this.editing = false
                         this.$emit('deleted', this.data.id)
-
 
                        /* $(this.$el).fadeOut(300, () => {
                             this.not('Reply Deleted', 'info')
@@ -133,6 +144,24 @@
                     }
                 }).show();
 
+            },
+
+            markBestReply() {
+                axios
+                    .post('/replies/'+this.data.id+'/best', {})
+                    .then((resp) => {
+                      //  this.$emit('best-reply-selected', this.data.id);
+                        this.not('Marked as best reply', 'success')
+                        this.thread.best_reply_id = this.id
+                    })
+                    .catch((error) => {
+                        if(error.response.status === 500) {
+                            this.not('An error has occurred, Try again later', 'error')
+                        }
+                        console.log(error);
+
+
+                    })
             }
         }
     }

@@ -48,6 +48,21 @@ trait  Threading {
     }
 
 
+    public function lock()
+    {
+        $this->update(['locked' => true]);
+
+    }
+
+
+
+    public function unLocked()
+    {
+        $this->update(['locked' => false]);
+
+    }
+
+
 
 
 }

@@ -42,13 +42,31 @@ class BestReplyTest extends TestCase
 
         $this->logedIn(create(User::class));
 
+
         $this->postJson(route('best-reply.store', ['reply' => $replies[1]->id]))
         ->assertStatus(403);
 
         $this->assertFalse($replies[1]->fresh()->isBest());
-
-
-
-
+        
    }
+
+    public function test_if_reply_deleted_then_best_reply_id_is_reset()
+    {
+
+        $this->withoutExceptionHandling();
+        $this->logedIn();
+
+        $reply = create(Reply::class, ['user_id' => auth()->id()]);
+
+        $reply->thread->markBestReply($reply);
+
+        //When reply is deleted
+
+        $this->delete(route('reply.destroy', $reply));
+
+        //set the best_reply_id to null
+
+        $this->assertNull( $reply->thread->fresh()->best_reply_id);
+
+    }
 }

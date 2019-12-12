@@ -30,7 +30,7 @@ class Trending
     {
         Redis::zincrby($this->cacheKey(), 1, json_encode([
             'title' => $thread->title,
-            'path' => '/threads/channel/'.$thread->channel->slug.'/'.$thread->id
+            'path' => '/threads/channel/'.$thread->channel->slug.'/'.$thread->slug
         ]));
     }
 

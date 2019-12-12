@@ -1,9 +1,9 @@
 <template>
 
     <div>
-        <p>
+
             <button  :class="classes" @click="subscribe">{{active ? 'UnFollow' : 'Follow'}}</button>
-        </p>
+
     </div>
 
 

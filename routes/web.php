@@ -15,7 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+Route::view('scan', 'scan');
 
 Auth::routes();
 
@@ -28,9 +28,18 @@ Route::get('/threads', 'ThreadsController@index')->name('threads');
 
 Route::get('/threads/create', 'ThreadsController@create')->name('threads.create');
 
+
+Route::get('/threads/search', 'SearchController@index');
+
 Route::post('/threads', 'ThreadsController@store')->name('threads.store')->middleware('must-be-confirmed');
 
 Route::get('/threads/channel/{channel}/{thread}', 'ThreadsController@show')->name('threads.show');
+
+Route::patch('/threads/channel/{channel}/{thread}', 'ThreadsController@update')->name('threads.update');
+
+Route::post('/lock-thread/{thread}', 'LockThreadController@store')->name('locked-thread.store');
+
+Route::delete('/lock-thread/{thread}', 'LockThreadController@destroy')->name('locked-thread.destroy');
 
 Route::delete('/threads/channel/{channel}/{thread}', 'ThreadsController@destroy');
 
@@ -51,7 +60,7 @@ Route::patch('/replies/{reply}', 'ReplyController@update')->name('reply.patch');
 
 Route::post('/replies/{reply}/favorites', 'FavoriteController@store')->name('reply.like');
 
-Route::delete('/replies/{reply}/favorites/', 'FavoriteController@destroy')->name('reply.destroy');
+Route::delete('/replies/{reply}/favorites/', 'FavoriteController@destroy')->name('favourite.destroy');
 
 //Mark Reply as Best
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Channel;
 use App\Http\Requests\ThreadRequest;
+use App\Rules\Recaptcha;
 use App\Thread;
 use App\ThreadFilters;
 use App\Trending;
@@ -71,10 +72,36 @@ class ThreadsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ThreadRequest $request)
+    public function store(Request $request, Recaptcha $recaptcha)
     {
 
-       return $request->storeThread();
+       //return $request->all();
+
+        $this->validate($request, [
+                'title' => 'required|spamfree',
+                'body' => 'required|spamfree',
+                'channel_id' => 'required|exists:channels,id',
+                'g-recaptcha-response' => ['required', $recaptcha]
+        ]);
+
+
+        $thread = Thread::create([
+            'title' => $request->title,
+            'body' => request('body'),
+            'user_id' => auth()->id(),
+            'channel_id' =>$request->channel_id
+        ]);
+
+        if(request()->wantsJson()) {
+            return response($thread, 201);
+        }
+
+        //dd($thread);
+        return redirect($thread->path())
+            ->with('flash', 'Your Thread has been Created!');
+
+
+      // return $request->storeThread();
 
     }
 
@@ -123,9 +150,12 @@ class ThreadsController extends Controller
      * @param  \App\Thread  $thread
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Thread $thread)
+    public function update(Channel $channel, Thread $thread)
     {
-        //
+
+
+
+
     }
 
     /**
@@ -165,6 +195,11 @@ class ThreadsController extends Controller
             $threads = $channel->threads()->latest();
         }
         return $threads->paginate(10);
+    }
+
+    public function storeThread()
+    {
+
     }
 
 

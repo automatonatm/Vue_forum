@@ -41,6 +41,10 @@ class ReplyController extends Controller
     public function store(Channel $channel, Thread $thread, Request $request)
     {
 
+        if($thread->locked) {
+            return response('Thread is locked', 422);
+        }
+
             $this->authorize('create', new Reply());
 
             $this->validate($request, [

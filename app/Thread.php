@@ -5,14 +5,20 @@ namespace App;
 use App\Entities\Threading;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Thread extends Model
 {
-    use Threading, RecordActivity, RecordsViews;
+    use Threading, RecordActivity, RecordsViews, Searchable;
 
     protected $guarded = [],
               $with = ['channel', 'user'],
               $appends = ['isSubscribedTo'];
+
+    protected  $casts = [
+                    'locked' => 'boolean'
+                 ];
+
 
 
 
@@ -34,6 +40,8 @@ class Thread extends Model
 
             $thread->replies->each->delete();
         });
+
+
 
         static::created(function ($thread) {
             $thread->update(['slug' => $thread->title]);

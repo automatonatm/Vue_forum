@@ -15,6 +15,7 @@ class ActivityTest extends TestCase
 {
 
     use DatabaseMigrations;
+
     public function test_it_records_activity_when_a_user_records_a_thread()
     {
         $this->logedIn();
@@ -41,8 +42,7 @@ class ActivityTest extends TestCase
         //dd(Activity::all());
 
 
-
-        $this->assertEquals(2, Activity::count());
+        $this->assertEquals(3, Activity::count());
 
     }
 

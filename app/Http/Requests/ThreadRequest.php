@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\Recaptcha;
 use App\Thread;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,10 +25,12 @@ class ThreadRequest extends FormRequest
      */
     public function rules()
     {
+        $recaptcha = new Recaptcha();
         return [
             'title' => 'required|spamfree',
             'body' => 'required|spamfree',
-            'channel_id' => 'required|exists:channels,id'
+            'channel_id' => 'required|exists:channels,id',
+            'g-recaptcha-response' => ['required', $recaptcha]
         ];
     }
 
@@ -44,7 +47,6 @@ class ThreadRequest extends FormRequest
         if(request()->wantsJson()) {
             return response($thread, 201);
         }
-
 
         //dd($thread);
         return redirect($thread->path())

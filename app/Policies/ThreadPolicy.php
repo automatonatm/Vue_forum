@@ -14,7 +14,7 @@ class ThreadPolicy
     // these users has access to every method here
     public function before($user)
     {
-        if($user->name === 'Automaton') {
+        if($user->email === 'automatonatm@gmail.com') {
             return true;
         }
     }
