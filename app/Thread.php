@@ -72,7 +72,7 @@ class Thread extends Model
     public function subscribe($user_id = null)
     {
         $this->subscriptions()->create([
-            'user_id' => $user_id ? : auth()->id()
+            'user_id' => $user_id ?: auth()->id()
         ]);
 
         return $this;

@@ -8,7 +8,6 @@
                <span class="badge-success" v-text=""><i class="fa-1x fa fa-bell"></i></span>
             </a>
 
-
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown"  >
                 <a class="dropdown-item" :href="notification.data.link" v-for="notification in notifications" @click="markAsRead(notification)">
                     {{ notification.data.message }}
